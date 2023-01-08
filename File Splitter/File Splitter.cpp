@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     }
     else if (argc > 3)
     {
-        cout << "Too many arguments. Some of them will be discard.\n";
+        cout << "Too many arguments. Some of them will be discarded.\n";
     }
 
     ifstream sourceFile(argv[1], ios::binary);
@@ -62,6 +62,7 @@ int main(int argc, char* argv[])
         ofstream newFile(newFilename, ios::binary);
         sourceFile.read(content, sizeToRead);
         newFile.write(content, sizeToRead);
+        newFile.close();
         free(content);
     }
 }
