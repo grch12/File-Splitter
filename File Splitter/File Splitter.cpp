@@ -40,6 +40,10 @@ int main(int argc, char* argv[])
         cout << "Amount too big.\n";
         return 0;
     }
+    if (amount <= 0) {
+        cout << "Amount must be an integer and bigger than zero.";
+        return 0;
+    }
     size_t eachFileSize = length / amount;
     size_t n = length - eachFileSize * amount;
 
