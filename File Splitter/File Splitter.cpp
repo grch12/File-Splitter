@@ -1,7 +1,6 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <string>
-#include <cstdlib>
 
 using namespace std;
 
@@ -34,7 +33,15 @@ int main(int argc, char* argv[])
     }
 
     size_t length = fileSize(&sourceFile);
-    int amount = atoi(argv[2]);
+    int amount;
+    try
+    {
+        amount = stoi((string)argv[2]);
+    }
+    catch (invalid_argument)
+    {
+        amount = 0;
+    }
     if (amount > length)
     {
         cout << "Amount too big.\n";
@@ -42,7 +49,7 @@ int main(int argc, char* argv[])
     }
     if (amount <= 0)
     {
-        cout << "Amount must be an integer and bigger than zero.";
+        cout << "Amount must be an integer and bigger than zero.\n";
         return 0;
     }
     size_t eachFileSize = length / amount;
@@ -63,11 +70,11 @@ int main(int argc, char* argv[])
             n--;
         }
         char* content = NULL;
-        content = (char*)malloc(sizeToRead);
+        content = new char[sizeToRead];
         ofstream newFile(newFilename, ios::binary);
         sourceFile.read(content, sizeToRead);
         newFile.write(content, sizeToRead);
         newFile.close();
-        free(content);
+        delete[] content;
     }
 }
