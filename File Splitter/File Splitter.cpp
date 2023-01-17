@@ -4,12 +4,12 @@
 
 using namespace std;
 
-size_t fileSize(ifstream* file)
+size_t fileSize(ifstream &file)
 {
-    streampos fpos = file->tellg();
-    file->seekg(0, ios_base::end);
-    size_t n = file->tellg();
-    file->seekg(fpos);
+    streampos fpos = file.tellg();
+    file.seekg(0, ios_base::end);
+    size_t n = file.tellg();
+    file.seekg(fpos);
     return n;
 }
 
@@ -28,11 +28,11 @@ int main(int argc, char* argv[])
     ifstream sourceFile(argv[1], ios::binary);
     if (sourceFile.fail())
     {
-        cout << "Open file failed.\n";
+        cout << "Could not open the source file.\n";
         return 0;
     }
 
-    size_t length = fileSize(&sourceFile);
+    size_t length = fileSize(sourceFile);
     int amount;
     try
     {
