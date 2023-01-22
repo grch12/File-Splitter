@@ -33,12 +33,12 @@ int main(int argc, char* argv[])
     }
 
     size_t length = fileSize(sourceFile);
-    int amount;
+    unsigned int amount;
     try
     {
         amount = stoi((string)argv[2]);
     }
-    catch (invalid_argument)
+    catch (invalid_argument&)
     {
         amount = 0;
     }
@@ -55,11 +55,20 @@ int main(int argc, char* argv[])
     size_t eachFileSize = length / amount;
     size_t n = length - eachFileSize * amount;
 
-    for (int i = 0; i < amount; i++)
+    for (unsigned int i = 0; i < amount; i++)
     {
         string newFilename;
         newFilename += argv[1];
         newFilename += "." + to_string(i + 1);
+
+        ifstream testFile(newFilename);
+        if (!testFile.fail())
+        {
+            cout << "This program will overwrite " << newFilename << ", do you want to continue?(Y/N)  ";
+            char choice;
+            cin >> choice;
+            if (choice == 'N' || choice == 'n') return 0;
+        }
 
         cout << "Generating " + newFilename + '\n';
 
