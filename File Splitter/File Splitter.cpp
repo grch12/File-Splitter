@@ -86,4 +86,7 @@ int main(int argc, char* argv[])
         newFile.close();
         delete[] content;
     }
+
+    sourceFile.close();
+    return 0;
 }
