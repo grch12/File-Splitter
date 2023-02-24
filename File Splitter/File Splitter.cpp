@@ -13,9 +13,16 @@ size_t fileSize(ifstream& file)
     return n;
 }
 
+bool fileExist(string filename) {
+    ifstream testFile(filename);
+    bool exist = !testFile.fail();
+    testFile.close();
+    return exist;
+}
+
 int main(int argc, char* argv[])
 {
-    if (argc < 3)
+    if (argc < 4)
     {
         cout << "Too few arguments.\n";
         return 0;
@@ -33,72 +40,77 @@ int main(int argc, char* argv[])
     }
 
     size_t length = fileSize(sourceFile);
-    size_t amount;
-    size_t eachFileSize = 0;
+    size_t amount = 0;
+    size_t eachFileSize;
     size_t n = 0;
+    string mode(argv[2]);
+    size_t param;
+
+    // 尝试转为 size_t ，失败则退出
     try
     {
-        amount = stoi((string)argv[2]);
-        if (amount <= 0)
-        {
-            cout << "Amount must be an integer and bigger than zero.\n";
-            return 0;
-        }
-        eachFileSize = length / amount;
-        n = length - eachFileSize * amount;
+        param = stoull(argv[3]);
     }
     catch (invalid_argument&)
     {
-        amount = 0;
-        string mode(argv[2]);
-        if (mode == "-b")
-        {
-            if (argc < 4)
-            {
-                cout << "Too few arguments.\n";
-                return 0;
-            }
-            eachFileSize = stoull((string)argv[3]);
-        }
-        else if (mode == "-k")
-        {
-            if (argc < 4)
-            {
-                cout << "Too few arguments.\n";
-                return 0;
-            }
-            eachFileSize = stoull((string)argv[3]) * 1024;
-        }
-        else if (mode == "-m")
-        {
-            if (argc < 4)
-            {
-                cout << "Too few arguments.\n";
-                return 0;
-            }
-            eachFileSize = stoull((string)argv[3]) * 1024 * 1024;
-        }
-        else
-        {
-            cout << "Mode must be -b, -k or -m.\n";
-            return 0;
-        }
+        cout << "Invalid syntax.\n";
+        return 0;
+    }
+    
+    // 选择模式，不支持则退出
+    if (mode == "-a")
+    {
+        amount = param;
+        eachFileSize = length / amount;
+    }
+    else if (mode == "-b")
+    {
+        eachFileSize = param;
+    }
+    else if (mode == "-k")
+    {
+        eachFileSize = param * 1024;
+    }
+    else if (mode == "-m")
+    {
+        eachFileSize = param * 1024 * 1024;
+    }
+    else
+    {
+        cout << "Mode must be -a, -b, -k or -m.\n";
+        return 0;
+    }
+
+    // 指定大小的模式
+    if(!amount)
+    {
         amount = length / eachFileSize + 1;
     }
+    // 指定总数的模式，处理“余数”（剩余的字节）
+    else {
+        n = length - amount * eachFileSize;
+    }
+
+    // 总数不能为 0 ，也不能大于文件大小
     if (amount > length)
     {
         cout << "Amount too big.\n";
         return 0;
     }
+    if (amount <= 0)
+    {
+        cout << "Amount must be an integer and bigger than 0.\n";
+    }
 
+    // for 循环，依次创建每个新文件
     for (size_t i = 1; i <= amount; i++)
     {
         string newFilename;
         newFilename += argv[1];
         newFilename += "." + to_string(i);
 
-        ifstream testFile(newFilename);
-        if (!testFile.fail())
+        // 如果同名文件已存在，则询问是否覆盖
+        if (fileExist(newFilename))
         {
             cout << "This program will overwrite " << newFilename
                 << ", do you want to continue?(Y/N)  ";
@@ -129,6 +141,8 @@ int main(int argc, char* argv[])
         delete[] content;
     }
 
+
+    // 关闭源文件
     sourceFile.close();
     return 0;
 }
