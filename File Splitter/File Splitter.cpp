@@ -13,7 +13,8 @@ size_t fileSize(ifstream& file)
     return n;
 }
 
-bool fileExist(string filename) {
+bool fileExist(string filename)
+{
     ifstream testFile(filename);
     bool exist = !testFile.fail();
     testFile.close();
@@ -86,7 +87,7 @@ int main(int argc, char* argv[])
     {
         amount = length / eachFileSize + 1;
     }
-    // 指定总数的模式，处理“余数”（剩余的字节）
+    // 指定总数的模式，处理除法产生的“余数”（剩余的字节）
     else {
         n = length - amount * eachFileSize;
     }
@@ -105,8 +106,7 @@ int main(int argc, char* argv[])
     // for 循环，依次创建每个新文件
     for (size_t i = 1; i <= amount; i++)
     {
-        string newFilename;
-        newFilename += argv[1];
+        string newFilename(argv[1]);
         newFilename += "." + to_string(i);
 
         // 如果同名文件已存在，则询问是否覆盖
