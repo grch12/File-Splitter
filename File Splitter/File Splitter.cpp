@@ -35,8 +35,10 @@ int main(int argc, char* argv[])
 
 	size_t unit = 0;
 
+	bool useAmount = false;
+
 	// 处理参数
-	auto amountCli = (command("-a"),
+	auto amountCli = (command("-a").set(useAmount, true),
 		value("amount", amount));
 
 	auto sizeCli = ((option("-b", "--byte").set(unit, 1llu).doc("use byte as the unit") |
@@ -68,7 +70,7 @@ int main(int argc, char* argv[])
 	}
 
 	// 指定大小的模式
-	if (!amount)
+	if (!useAmount)
 	{
 		eachFileSize = size * unit;
 		amount = length / eachFileSize + 1;
@@ -91,6 +93,7 @@ int main(int argc, char* argv[])
 		n = length - amount * eachFileSize;
 	}
 
+	bool skipped = false;
 	// for 循环，依次创建每个新文件
 	for (size_t i = 1; i <= amount; i++)
 	{
@@ -98,14 +101,16 @@ int main(int argc, char* argv[])
 		newFilename += "." + std::to_string(i);
 
 		// 如果同名文件已存在，则询问是否覆盖
-		if (fileExist(newFilename))
+		if (fileExist(newFilename) && !skipped)
 		{
 			std::cout << "This program will overwrite " << newFilename
-				<< ", do you want to continue?(Y/N)  ";
+				<< ", do you want to continue?([Y]Yes/[N]No/[A]Yes to All)  ";
 			char choice;
 			std::cin >> choice;
 			if (choice == 'N' || choice == 'n')
 				return 0;
+			else if (choice == 'A' || choice == 'a')
+				skipped = true;
 		}
 
 		std::cout << "Generating " + newFilename + '\n';
